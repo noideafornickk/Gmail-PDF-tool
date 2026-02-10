@@ -345,7 +345,7 @@ app.get("/auth/google/callback", async (req, res, next) => {
       createdAt: Date.now(),
     });
 
-    return res.redirect(`${FRONTEND_ORIGIN}/frontend/?token=${sessionToken}`);
+    return res.redirect(`${FRONTEND_ORIGIN}/Gmail-PDF-tool/?token=${sessionToken}`);
   } catch (error) {
     logError("AUTH CALLBACK ERROR", error);
 
