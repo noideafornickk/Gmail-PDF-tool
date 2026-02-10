@@ -1,0 +1,7 @@
+# Nunca versionar segredos locais do backend.
+backend/.env
+**/.env
+# Evita commit acidental de arquivos de credencial baixados do Google Cloud.
+client_secret*.json
+# Evita poluicao de logs locais.
+*.log

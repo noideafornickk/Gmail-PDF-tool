@@ -1,0 +1,19 @@
+{
+  "name": "gmail-to-pdf-backend",
+  "version": "1.0.0",
+  "description": "API backend para autenticação Gmail OAuth e geração de PDF com Puppeteer.",
+  "main": "src/index.js",
+  "private": true,
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "check": "node src/selfcheck.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "googleapis": "^169.0.0",
+    "puppeteer": "^24.30.0"
+  }
+}

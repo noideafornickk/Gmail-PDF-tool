@@ -1,0 +1,7 @@
+node_modules/
+backend/.env
+**/.env
+.env
+npm-debug.log*
+*.log
+client_secret*.json

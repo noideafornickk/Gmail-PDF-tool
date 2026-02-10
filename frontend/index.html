@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gmail to PDF</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <h1>Gmail to PDF</h1>
+      <p>Conecte sua conta Google, liste os e-mails mais recentes e exporte para PDF.</p>
+    </header>
+
+    <section class="panel">
+      <div id="statusBadge" class="status disconnected">Desconectado</div>
+      <p id="statusText" class="status-text">Faça login para começar.</p>
+      <p id="runtimeInfo" class="runtime-info" aria-live="polite"></p>
+
+      <div class="actions">
+        <button id="connectBtn">Conectar com Google</button>
+        <button id="listBtn" class="secondary" disabled>Listar 10 e-mails</button>
+        <button id="logoutBtn" class="danger" disabled>Desconectar</button>
+      </div>
+
+      <div id="status" style="margin-top:10px;font-size:14px;"></div>
+      <p id="message" class="message" aria-live="polite"></p>
+    </section>
+
+    <section class="panel">
+      <div class="section-header">
+        <h2>E-mails recentes</h2>
+      </div>
+      <div id="emails" class="email-list">
+        <p class="empty">Nenhum e-mail carregado.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
