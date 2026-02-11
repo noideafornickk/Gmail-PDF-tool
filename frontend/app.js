@@ -157,8 +157,33 @@ function sanitizeFilename(name) {
 }
 
 function parseFilenameFromDisposition(contentDisposition) {
-  const match = /filename="?(.*?)"?$/i.exec(contentDisposition || "");
-  return match && match[1] ? match[1] : "";
+  const header = String(contentDisposition || "");
+  if (!header) {
+    return "";
+  }
+
+  const encodedMatch = /filename\*\s*=\s*([^;]+)/i.exec(header);
+  if (encodedMatch && encodedMatch[1]) {
+    const rawValue = encodedMatch[1].trim().replace(/^"(.*)"$/, "$1");
+    const rfc5987Split = rawValue.split("''");
+    const encodedFilename = rfc5987Split.length > 1 ? rfc5987Split.slice(1).join("''") : rawValue;
+
+    try {
+      return decodeURIComponent(encodedFilename);
+    } catch (_error) {
+      // Ignora falha de decode e tenta fallback em filename simples.
+    }
+  }
+
+  const fallbackMatch = /filename\s*=\s*([^;]+)/i.exec(header);
+  if (!fallbackMatch || !fallbackMatch[1]) {
+    return "";
+  }
+
+  return fallbackMatch[1]
+    .trim()
+    .replace(/^"(.*)"$/, "$1")
+    .replace(/\\(.)/g, "$1");
 }
 
 function assertApiReady() {
