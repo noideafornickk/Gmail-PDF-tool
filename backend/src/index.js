@@ -114,6 +114,7 @@ function respondMissingConfig(res, missing) {
 
 function sanitizeFilename(filename) {
   const sanitized = String(filename || "email")
+    .replace(/[\u0000-\u001f\u007f]/g, " ")
     .replace(/[\/\\:*?"<>|]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -123,6 +124,45 @@ function sanitizeFilename(filename) {
   }
 
   return sanitized.slice(0, 120);
+}
+
+function toAsciiFilename(filename) {
+  const normalized = String(filename || "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  const ascii = normalized
+    .replace(/[^\x20-\x7e]/g, "")
+    .replace(/["\\]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!ascii) {
+    return "email";
+  }
+
+  return ascii.slice(0, 120);
+}
+
+function encodeRFC5987(value) {
+  return encodeURIComponent(String(value || "")).replace(
+    /['()*]/g,
+    (character) => `%${character.charCodeAt(0).toString(16).toUpperCase()}`
+  );
+}
+
+function ensurePdfExtension(filename) {
+  return /\.pdf$/i.test(filename) ? filename : `${filename}.pdf`;
+}
+
+function buildContentDisposition(filename) {
+  const cleanBaseFilename = sanitizeFilename(filename);
+  const cleanFilename = ensurePdfExtension(cleanBaseFilename);
+  const asciiFilename = ensurePdfExtension(toAsciiFilename(cleanBaseFilename));
+  const escapedAsciiFilename = asciiFilename.replace(/(["\\])/g, "\\$1");
+  const utf8Filename = encodeRFC5987(cleanFilename);
+
+  return `attachment; filename="${escapedAsciiFilename}"; filename*=UTF-8''${utf8Filename}`;
 }
 
 function isReconnectError(error) {
@@ -416,11 +456,10 @@ app.post("/api/generate-pdf", async (req, res, next) => {
       bodyHtml,
     });
 
-    const safeFilename = sanitizeFilename(filename || headers.subject || `email-${messageId}`);
-    const downloadFilename = `${safeFilename}.pdf`;
+    const baseFilename = filename || headers.subject || `email-${messageId}`;
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="${downloadFilename}"`);
+    res.setHeader("Content-Disposition", buildContentDisposition(baseFilename));
     return res.send(pdfBuffer);
   } catch (error) {
     if (respondGoogleDiagnosis(res, error)) {
